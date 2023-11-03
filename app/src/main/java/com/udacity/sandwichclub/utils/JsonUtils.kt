@@ -1,47 +1,40 @@
-package com.udacity.sandwichclub.utils;
+package com.udacity.sandwichclub.utils
 
-import com.udacity.sandwichclub.model.Sandwich;
+import com.udacity.sandwichclub.model.Sandwich
+import org.json.JSONObject
+import org.json.JSONException
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class JsonUtils {
-    private static Sandwich sammich = new Sandwich();
-
-    public static Sandwich parseSandwichJson(String json) {
+object JsonUtils {
+    private var sammich = Sandwich()
+    fun parseSandwichJson(json: String): Sandwich {
         try {
-            JSONObject obj = new JSONObject(json);
-            JSONObject objname = obj.getJSONObject("name");
-            String name = objname.optString("mainName");
-            JSONArray aka = objname.getJSONArray("alsoKnownAs");
-            String origin = obj.optString("placeOfOrigin");
-            String desc = obj.optString("description");
-            String img = obj.optString("image");
-            JSONArray ing = obj.getJSONArray("ingredients");
-            List<String> akaList = new ArrayList<>();
-            List<String> ingList = new ArrayList<>();
+            val obj = JSONObject(json)
+            val objname = obj.getJSONObject("name")
+            val name = objname.optString("mainName")
+            val aka = objname.getJSONArray("alsoKnownAs")
+            val origin = obj.optString("placeOfOrigin")
+            val desc = obj.optString("description")
+            val img = obj.optString("image")
+            val ing = obj.getJSONArray("ingredients")
+            val akaList: ArrayList<String> = ArrayList()
+            val ingList: ArrayList<String> = ArrayList()
 
-            for (int i = 0; i < aka.length(); i++) {
-                akaList.add(i, aka.optString(i));
+            for (i in 0 until aka.length()) {
+                akaList.add(i, aka.optString(i))
             }
-            if (akaList.size() < 1) {
-                akaList.add(0, "");
+            if (akaList.isEmpty()) {
+                akaList.add(0, "")
             }
-            for (int i = 0; i < ing.length(); i++) {
-                ingList.add(i, ing.optString(i));
+            for (i in 0 until ing.length()) {
+                ingList.add(i, ing.optString(i))
             }
-            if (ingList.size() < 1) {
-                ingList.add(0, "");
+            if (ingList.isEmpty()) {
+                ingList.add(0, "")
             }
-
-            sammich = new Sandwich(name, akaList, origin, desc, img, ingList);
-        } catch (JSONException e){
-            e.printStackTrace();
+            sammich = Sandwich(name, akaList, origin, desc, img, ingList)
+        } catch (e: JSONException) {
+            e.printStackTrace()
         }
-        return sammich;
+        return sammich
     }
 }

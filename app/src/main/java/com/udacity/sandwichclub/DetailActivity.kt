@@ -1,99 +1,80 @@
-package com.udacity.sandwichclub;
+package com.udacity.sandwichclub
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.ImageView
+import com.udacity.sandwichclub.model.Sandwich
+import com.udacity.sandwichclub.utils.JsonUtils
+import com.squareup.picasso.Picasso
+import android.widget.Toast
+import android.widget.TextView
+import java.lang.StringBuilder
 
-import com.squareup.picasso.Picasso;
-import com.udacity.sandwichclub.model.Sandwich;
-import com.udacity.sandwichclub.utils.JsonUtils;
-
-import java.util.List;
-
-public class DetailActivity extends AppCompatActivity {
-
-    public static final String EXTRA_POSITION = "extra_position";
-    private static final int DEFAULT_POSITION = -1;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-
-        ImageView imgIv = findViewById(R.id.image_iv);
-
-        Intent intent = getIntent();
+class DetailActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_detail)
+        val imgIv = findViewById<ImageView>(R.id.image_iv)
+        val intent = intent
         if (intent == null) {
-            closeOnError();
+            closeOnError()
         }
-
-        int position = intent.getIntExtra(EXTRA_POSITION, DEFAULT_POSITION);
+        val position = intent!!.getIntExtra(EXTRA_POSITION, DEFAULT_POSITION)
         if (position == DEFAULT_POSITION) {
             // EXTRA_POSITION not found in intent
-            closeOnError();
-            return;
+            closeOnError()
+            return
         }
-
-        String[] sandwiches = getResources().getStringArray(R.array.sandwich_details);
-        String json = sandwiches[position];
-        Sandwich sandwich = JsonUtils.parseSandwichJson(json);
-        if (sandwich == null) {
-            // Sandwich data unavailable
-            closeOnError();
-            return;
-        }
-
-        populateUI(sandwich);
-
+        val sandwiches = resources.getStringArray(R.array.sandwich_details)
+        val json = sandwiches[position]
+        val sandwich = JsonUtils.parseSandwichJson(json)
+        populateUI(sandwich)
         Picasso.with(this)
-                .load(sandwich.getImage())
-                .into(imgIv);
-
-        setTitle(sandwich.getMainName());
+            .load(sandwich.image)
+            .into(imgIv)
+        title = sandwich.mainName
     }
 
-    private void closeOnError() {
-        finish();
-        Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
+    private fun closeOnError() {
+        finish()
+        Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show()
     }
 
-    private void populateUI(Sandwich wich) {
-        TextView originTv = findViewById(R.id.origin_tv);
-        TextView akaTv =  findViewById(R.id.also_known_tv);
-        TextView ingTv = findViewById(R.id.ingredients_tv);
-        TextView descTv = findViewById(R.id.description_tv);
-        List<String> akaList = wich.getAlsoKnownAs();
-        StringBuilder sbAka = new StringBuilder();
-        List<String> ingList = wich.getIngredients();
-        StringBuilder sbIng = new StringBuilder();
-
-        if(akaList != null) {
-            for (String aka: akaList) {
-                sbAka.append(aka);
-                sbAka.append(", ");
+    private fun populateUI(wich: Sandwich) {
+        val originTv = findViewById<TextView>(R.id.origin_tv)
+        val akaTv = findViewById<TextView>(R.id.also_known_tv)
+        val ingTv = findViewById<TextView>(R.id.ingredients_tv)
+        val descTv = findViewById<TextView>(R.id.description_tv)
+        val akaList = wich.alsoKnownAs
+        val sbAka = StringBuilder()
+        val ingList = wich.ingredients
+        val sbIng = StringBuilder()
+        if (akaList != null) {
+            for (aka in akaList) {
+                sbAka.append(aka)
+                sbAka.append(", ")
             }
-            sbAka.delete(sbAka.length()-2, sbAka.length());
+            sbAka.delete(sbAka.length - 2, sbAka.length)
         } else {
-            sbAka.append("");
+            sbAka.append("")
         }
-
-        if(ingList != null) {
-            for (String ing: ingList) {
-                sbIng.append(ing);
-                sbIng.append(", ");
+        if (ingList != null) {
+            for (ing in ingList) {
+                sbIng.append(ing)
+                sbIng.append(", ")
             }
-            sbIng.delete(sbIng.length()-2, sbIng.length());
+            sbIng.delete(sbIng.length - 2, sbIng.length)
         } else {
-            sbIng.append("");
+            sbIng.append("")
         }
+        descTv.text = wich.description
+        originTv.text = wich.placeOfOrigin
+        akaTv.text = sbAka.toString()
+        ingTv.text = sbIng.toString()
+    }
 
-        descTv.setText(wich.getDescription());
-        originTv.setText(wich.getPlaceOfOrigin());
-        akaTv.setText(sbAka.toString());
-        ingTv.setText(sbIng.toString());
-
+    companion object {
+        const val EXTRA_POSITION = "extra_position"
+        private const val DEFAULT_POSITION = -1
     }
 }
